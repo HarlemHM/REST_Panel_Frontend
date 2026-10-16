@@ -1,106 +1,148 @@
-# React + TypeScript + Vite
+# REST Panel Frontend
 
-## Entornos de API
+Panel web construido con React, TypeScript y Vite.
 
-El Panel utiliza `VITE_API_URL` como unica fuente para Axios y Socket.IO.
+## 1) Requisitos e instalacion
+
+- Node.js 24
+- npm
+- Docker y Docker Compose para ejecución contenerizada
 
 ```bash
-# Panel local conectado al entorno de pruebas del VPS
+npm install
+```
+
+## 2) Configuracion de API
+
+El Panel no contiene URLs de API en el código. Lee exclusivamente
+`VITE_API_URL` desde un único `.env` privado.
+
+| Entorno | `VITE_API_URL` |
+|---|---|
+| Local | `http://localhost:3000` |
+| Pruebas | `https://api-test.restapp.site` |
+| Producción | `https://api.restapp.site` |
+| Universidad | `http://179.197.239.216:3000` |
+
+Crea el archivo inicial:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+`.env` está ignorado por Git. Para cambiar de entorno, reemplaza únicamente su
+contenido.
+
+### Local
+
+```powershell
+'VITE_API_URL=http://localhost:3000' | Out-File .env -Encoding ascii
+```
+
+### Pruebas
+
+```powershell
+'VITE_API_URL=https://api-test.restapp.site' | Out-File .env -Encoding ascii
+```
+
+### Produccion
+
+```powershell
+'VITE_API_URL=https://api.restapp.site' | Out-File .env -Encoding ascii
+```
+
+### Universidad
+
+```powershell
+'VITE_API_URL=http://179.197.239.216:3000' | Out-File .env -Encoding ascii
+```
+
+## 3) Ejecutar desde la terminal
+
+La URL puede enviarse en el mismo comando, sin modificar `.env`:
+
+```powershell
+# Local
+$env:VITE_API_URL='http://localhost:3000'; npm run dev
+
+# Pruebas
+$env:VITE_API_URL='https://api-test.restapp.site'; npm run dev
+
+# Producción
+$env:VITE_API_URL='https://api.restapp.site'; npm run dev
+```
+
+También puedes utilizar la URL guardada en `.env`:
+
+```bash
 npm run dev
+```
 
-# Equivalente explicito
-npm run dev:test
+El Panel queda disponible en `http://localhost:5173`.
 
-# Panel local conectado a produccion
-npm run dev:production
+## 4) Construir el Panel
 
-# Build de pruebas
-npm run build:test
+```powershell
+# Local
+$env:VITE_API_URL='http://localhost:3000'; npm run build
 
-# Build de produccion
+# Pruebas
+$env:VITE_API_URL='https://api-test.restapp.site'; npm run build
+
+# Producción
+$env:VITE_API_URL='https://api.restapp.site'; npm run build
+```
+
+Para construir utilizando el `.env` actual:
+
+```bash
 npm run build
 ```
 
-| Entorno | API |
-|---|---|
-| `test` | `https://api-test.restapp.site` |
-| `production` | `https://api.restapp.site` |
-
-`localhost` no es un tercer entorno. Si tambien se ejecuta el backend en el equipo local, crea `.env.test.local` (no versionado); Vite lo usara como sobrescritura personal del entorno `test`:
-
-```dotenv
-VITE_API_URL=http://localhost:3000
-```
-
-## Contenedor local
-
-Por defecto el contenedor consume el entorno `test` y publica el Panel en `http://localhost:8080`:
+Los archivos generados quedan en `dist/`. Para probarlos:
 
 ```bash
-docker compose up -d --build
+npm run preview
 ```
 
-`APP_ENV` y `VITE_API_URL` pueden sobrescribirse al construir. Una URL local es solamente una opcion de desarrollo, no un tercer entorno.
+## 5) Ejecutar con Docker
 
-## Desarrollo de ramas test con volumen
-
-Para `develop` y `feature/*`, usa Vite dentro de Docker con el codigo montado como volumen y la API fija de pruebas:
+El contenedor usa el mismo `.env` y publica el Panel en
+`http://localhost:8080`:
 
 ```powershell
-docker compose -p rest-panel-dev -f docker-compose.dev.yml up -d
+docker compose --env-file .env -p rest-panel up -d --build --force-recreate
 ```
 
-Abre `http://localhost:5173`. Vite detecta cambios de archivos y cambios de rama sin ejecutar `docker build`.
-
-Si una rama cambia `package.json` o `package-lock.json`, reinicia el servicio para volver a ejecutar `npm ci`:
+Ver logs y detenerlo:
 
 ```powershell
-docker compose -p rest-panel-dev -f docker-compose.dev.yml restart admin
+docker compose --env-file .env -p rest-panel logs -f admin
+docker compose --env-file .env -p rest-panel down
 ```
 
-Para validar `main` contra produccion, construye la imagen release:
+## 6) Desarrollo con Docker y volumen
 
 ```powershell
-$env:APP_ENV = "production"
-$env:VITE_API_URL = "https://api.restapp.site"
-docker compose -p rest-panel-release up -d --build
-Remove-Item Env:APP_ENV
-Remove-Item Env:VITE_API_URL
+docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml up -d
 ```
 
-Detener desarrollo:
+Vite queda disponible en `http://localhost:5173` y detecta los cambios del
+código. Si cambian las dependencias:
 
 ```powershell
-docker compose -p rest-panel-dev -f docker-compose.dev.yml down
+docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml restart admin
 ```
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Para detenerlo:
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml down
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 7) Seguridad
+
+Solo `.env.example` se guarda en Git. El `.env` real está ignorado. No guardes
+contraseñas, tokens ni llaves privadas en variables que comiencen por `VITE_`,
+porque Vite las incorpora al frontend compilado. La URL pública de la API será
+visible en el navegador por diseño.

@@ -6,12 +6,14 @@ import { LoadingSpinner, ErrorState } from '../../../components/shared';
 import { ovaApi } from '../../../api';
 import type { OvaEfectividad } from '../../../types';
 import { EfectividadView } from '../components/EfectividadView';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 
 export default function OvaEfectividadPage() {
   const navigate = useNavigate();
   const [efectividad, setEfectividad] = useState<OvaEfectividad | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const ref = useEntranceRef<HTMLDivElement>({ ready: !loading && !error && !!efectividad });
 
   useEffect(() => { cargar(); }, []);
 
@@ -31,11 +33,11 @@ export default function OvaEfectividadPage() {
   if (error || !efectividad) return <ErrorState message={error || 'Sin datos'} onRetry={cargar} />;
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
+    <div ref={ref}>
+      <div className="flex items-start gap-4">
         <button
           onClick={() => navigate('/ovas')}
-          className="text-text-secondary hover:text-text-primary cursor-pointer"
+          className="mt-1.5 cursor-pointer rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
           aria-label="Volver a OVAs"
         >
           <ArrowLeft size={24} />

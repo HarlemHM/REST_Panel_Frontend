@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Upload } from 'lucide-react';
-import { Modal, Input, Button } from '../../../components/ui';
+import { Modal, Input, Select, Textarea, Button } from '../../../components/ui';
 import { ovaApi } from '../../../api';
 import type { Ova, OvaPayload, OvaStorageSource, OvaTipoActividad } from '../../../types';
 import { FUENTES, TIPOS } from '../constants';
@@ -15,9 +15,6 @@ interface OvaFormModalProps {
 
 const MAX_MB = 80;
 const ACCEPT = 'video/mp4,video/webm,video/quicktime,audio/mpeg,audio/mp4,application/pdf,image/jpeg,image/png,image/webp';
-
-const selectClass =
-  'w-full rounded-lg border border-gray-200 bg-surface px-4 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 interface FormState {
   titulo: string;
@@ -128,29 +125,23 @@ export function OvaFormModal({ isOpen, ova, onClose, onSaved }: OvaFormModalProp
           maxLength={255}
         />
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-text-secondary">Descripcion</label>
-          <textarea
-            value={form.descripcion}
-            onChange={(e) => set('descripcion', e.target.value)}
-            rows={3}
-            className={selectClass}
-          />
-        </div>
+        <Textarea
+          label="Descripcion"
+          value={form.descripcion}
+          onChange={(e) => set('descripcion', e.target.value)}
+          rows={3}
+        />
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-text-secondary">Tipo</label>
-            <select
-              value={form.tipo_actividad}
-              onChange={(e) => set('tipo_actividad', e.target.value as OvaTipoActividad)}
-              className={selectClass}
-            >
-              {TIPOS.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label="Tipo"
+            value={form.tipo_actividad}
+            onChange={(e) => set('tipo_actividad', e.target.value as OvaTipoActividad)}
+          >
+            {TIPOS.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </Select>
           <Input
             label="Duracion (min)"
             type="number"
@@ -161,29 +152,26 @@ export function OvaFormModal({ isOpen, ova, onClose, onSaved }: OvaFormModalProp
           />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-text-secondary">Fuente del recurso</label>
-          <select
-            value={form.storage_source}
-            onChange={(e) => {
-              set('storage_source', e.target.value as OvaStorageSource);
-              set('resource_url', '');
-              setArchivo(null);
-            }}
-            className={selectClass}
-          >
-            {FUENTES.map((f) => (
-              <option key={f.value} value={f.value}>{f.label}</option>
-            ))}
-          </select>
-        </div>
+        <Select
+          label="Fuente del recurso"
+          value={form.storage_source}
+          onChange={(e) => {
+            set('storage_source', e.target.value as OvaStorageSource);
+            set('resource_url', '');
+            setArchivo(null);
+          }}
+        >
+          {FUENTES.map((f) => (
+            <option key={f.value} value={f.value}>{f.label}</option>
+          ))}
+        </Select>
 
         {form.storage_source === 'CLOUDFLARE_R2' ? (
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-text-secondary">
               Archivo (video, audio, PDF o imagen, max. {MAX_MB} MB)
             </label>
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-text-secondary hover:border-primary">
+            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-line px-4 py-3 text-sm text-text-secondary transition-colors hover:border-primary hover:bg-primary-light">
               <Upload size={18} />
               <span className="truncate">
                 {archivo?.name ?? (form.resource_url ? `Actual: ${form.resource_url}` : 'Seleccionar archivo')}

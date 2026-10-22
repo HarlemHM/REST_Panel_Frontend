@@ -11,6 +11,7 @@ import { RecursoPreview } from '../components/RecursoPreview';
 import { ReglasPanel } from '../components/ReglasPanel';
 import { EfectividadView } from '../components/EfectividadView';
 import { etiqueta } from '../constants';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 
 export default function OvaDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +23,7 @@ export default function OvaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editando, setEditando] = useState(false);
+  const ref = useEntranceRef<HTMLDivElement>({ ready: !loading && !error && !!ova });
 
   useEffect(() => { cargar(); }, [ovaId]);
 
@@ -54,11 +56,11 @@ export default function OvaDetailPage() {
   if (error || !ova) return <ErrorState message={error || 'OVA no encontrado'} onRetry={cargar} />;
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
+    <div ref={ref}>
+      <div className="flex items-start gap-4">
         <button
           onClick={() => navigate('/ovas')}
-          className="text-text-secondary hover:text-text-primary cursor-pointer"
+          className="mt-1.5 cursor-pointer rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
           aria-label="Volver a OVAs"
         >
           <ArrowLeft size={24} />
@@ -81,7 +83,7 @@ export default function OvaDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <Card>
+        <Card data-enter>
           <h3 className="font-semibold text-text-primary mb-3">Recurso</h3>
           <RecursoPreview recurso={ova.recurso_resuelto} />
           {ova.descripcion && <p className="text-sm text-text-secondary mt-4">{ova.descripcion}</p>}
@@ -93,7 +95,7 @@ export default function OvaDetailPage() {
         <ReglasPanel ovaId={ova.id} reglas={ova.reglas} onChange={handleReglas} />
       </div>
 
-      <h3 className="font-semibold text-text-primary mb-3">Efectividad de este OVA</h3>
+      <h3 data-enter className="mb-4 text-lg font-semibold text-text-primary">Efectividad de este OVA</h3>
       {efectividad && <EfectividadView efectividad={efectividad} />}
 
       <OvaFormModal

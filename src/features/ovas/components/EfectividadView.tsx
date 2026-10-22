@@ -9,7 +9,7 @@ interface EfectividadViewProps {
 
 function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <Card padding="sm">
+    <Card data-enter padding="sm" className="transition-shadow duration-200 hover:shadow-card-hover">
       <p className="text-xs text-text-muted">{label}</p>
       <p className="text-2xl font-bold text-text-primary mt-1">{value}</p>
       {hint && <p className="text-xs text-text-muted mt-1">{hint}</p>}
@@ -39,7 +39,7 @@ function Desglose({
   campo: 'dimension' | 'nivel';
 }) {
   return (
-    <Card>
+    <Card data-enter>
       <h3 className="font-semibold text-text-primary mb-4">{titulo}</h3>
       {filas.length === 0 ? (
         <p className="text-sm text-text-muted">Sin datos todavia</p>
@@ -55,7 +55,7 @@ function Desglose({
                 <th className="pb-2 font-medium text-right">Delta prom.</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-line">
               {filas.map((f) => {
                 const clave = f[campo] ?? '';
                 const nombre =

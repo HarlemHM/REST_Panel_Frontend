@@ -2,15 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Clock, Eye, Library, Pencil, Plus, Power, Search, Trash2 } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
-import { Card, Button, Badge, Input } from '../../../components/ui';
+import { Card, Button, Badge, Input, Select } from '../../../components/ui';
 import { LoadingSpinner, ErrorState, EmptyState } from '../../../components/shared';
 import { ovaApi } from '../../../api';
 import type { Ova, OvaTipoActividad } from '../../../types';
 import { OvaFormModal } from '../components/OvaFormModal';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 import { FUENTES, TIPOS, etiqueta } from '../constants';
-
-const selectClass =
-  'rounded-lg border border-gray-200 bg-surface px-3 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 export default function OvasPage() {
   const navigate = useNavigate();
@@ -26,6 +24,7 @@ export default function OvasPage() {
 
   const [formAbierto, setFormAbierto] = useState(false);
   const [ovaEditando, setOvaEditando] = useState<Ova | null>(null);
+  const ref = useEntranceRef<HTMLDivElement>({ ready: !loading && !error });
 
   // La busqueda por titulo espera a que el usuario deje de escribir.
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function OvasPage() {
   }
 
   return (
-    <div>
+    <div ref={ref}>
       <Header
         title="OVAs"
         subtitle="Catalogo de objetos virtuales de aprendizaje y reglas de asignacion"
@@ -124,17 +123,25 @@ export default function OvasPage() {
             className="pl-9"
           />
         </div>
-        <select value={tipo} onChange={(e) => setTipo(e.target.value as OvaTipoActividad | '')} className={selectClass}>
+        <Select
+          aria-label="Filtrar por tipo"
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value as OvaTipoActividad | '')}
+        >
           <option value="">Todos los tipos</option>
           {TIPOS.map((t) => (
             <option key={t.value} value={t.value}>{t.label}</option>
           ))}
-        </select>
-        <select value={estado} onChange={(e) => setEstado(e.target.value as typeof estado)} className={selectClass}>
+        </Select>
+        <Select
+          aria-label="Filtrar por estado"
+          value={estado}
+          onChange={(e) => setEstado(e.target.value as typeof estado)}
+        >
           <option value="todos">Todos</option>
           <option value="activos">Activos</option>
           <option value="inactivos">Inactivos</option>
-        </select>
+        </Select>
       </div>
 
       {accionError && <p className="text-sm text-coral mb-4">{accionError}</p>}
@@ -152,7 +159,7 @@ export default function OvasPage() {
       ) : (
         <div className="space-y-3">
           {ovas.map((ova) => (
-            <Card key={ova.id} padding="sm">
+            <Card key={ova.id} data-enter padding="sm" className="transition-shadow duration-200 hover:shadow-card-hover">
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { Card, Badge, Button, Input, Modal } from '../../../components/ui';
+import { Card, Badge, Button, Input, Select, Modal } from '../../../components/ui';
 import { EmptyState } from '../../../components/shared';
 import { ovaApi } from '../../../api';
 import type { OvaDimension, OvaNivel, OvaRegla } from '../../../types';
@@ -13,9 +13,6 @@ interface ReglasPanelProps {
   reglas: OvaRegla[];
   onChange: (reglas: OvaRegla[]) => void;
 }
-
-const selectClass =
-  'w-full rounded-lg border border-gray-200 bg-surface px-4 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 export function ReglasPanel({ ovaId, reglas, onChange }: ReglasPanelProps) {
   const [editando, setEditando] = useState<OvaRegla | null>(null);
@@ -104,7 +101,7 @@ export function ReglasPanel({ ovaId, reglas, onChange }: ReglasPanelProps) {
   const ordenadas = [...reglas].sort((a, b) => b.prioridad - a.prioridad);
 
   return (
-    <Card>
+    <Card data-enter>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-semibold text-text-primary">Reglas de asignacion</h3>
@@ -126,7 +123,7 @@ export function ReglasPanel({ ovaId, reglas, onChange }: ReglasPanelProps) {
           description="Sin reglas activas este OVA no se asignara automaticamente."
         />
       ) : (
-        <ul className="divide-y divide-gray-100">
+        <ul className="divide-y divide-line">
           {ordenadas.map((r) => (
             <li key={r.id} className="flex items-center gap-3 py-3 flex-wrap">
               <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
@@ -160,31 +157,27 @@ export function ReglasPanel({ ovaId, reglas, onChange }: ReglasPanelProps) {
 
       <Modal isOpen={abierto} onClose={() => setAbierto(false)} title={editando ? 'Editar regla' : 'Nueva regla'}>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Select
+            label="Dimension"
+            value={dimension}
+            onChange={(e) => setDimension(e.target.value as OvaDimension | '')}
+          >
+            <option value="">Cualquiera</option>
+            {DIMENSIONES.map((d) => (
+              <option key={d.value} value={d.value}>{d.label}</option>
+            ))}
+          </Select>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-text-secondary">Dimension</label>
-            <select
-              value={dimension}
-              onChange={(e) => setDimension(e.target.value as OvaDimension | '')}
-              className={selectClass}
-            >
-              <option value="">Cualquiera</option>
-              {DIMENSIONES.map((d) => (
-                <option key={d.value} value={d.value}>{d.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-text-secondary">Nivel de semaforo</label>
-            <select
+            <Select
+              label="Nivel de semaforo"
               value={nivel}
               onChange={(e) => setNivel(e.target.value as OvaNivel | '')}
-              className={selectClass}
             >
               <option value="">Cualquiera</option>
               {NIVELES.map((n) => (
                 <option key={n} value={n}>{capitalizar(n)}</option>
               ))}
-            </select>
+            </Select>
             <p className="text-xs text-text-muted">
               Solo dimension: coincide cuando esa dimension esta en amarillo o rojo.
               Solo nivel: coincide con el semaforo global de la evaluacion.

@@ -11,6 +11,7 @@ import {
   ShieldOff,
   CheckCircle2,
   Heart,
+  Library,
   type LucideIcon,
 } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
@@ -31,8 +32,9 @@ import { semaforoVariant } from '../components/nivelSemaforo';
 
 import { RegistrosEmocional } from '../components/RegistrosEmocional';
 import { EstadisticasChart } from '../components/EstadisticasChart';
+import { OvasPaciente } from '../components/OvasPaciente';
 
-type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas' | 'emocional' | 'estadisticas';
+type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas' | 'emocional' | 'estadisticas' | 'ovas';
 
 const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'resumen', label: 'Resumen', icon: LayoutGrid },
@@ -41,6 +43,7 @@ const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'evaluaciones', label: 'Evaluaciones', icon: History },
   { key: 'actividades', label: 'Actividades', icon: Activity },
   { key: 'encuestas', label: 'Encuestas', icon: ClipboardList },
+  { key: 'ovas', label: 'OVAs', icon: Library },
 ];
 
 function formatearRespuesta(respuesta: string): string {
@@ -194,6 +197,10 @@ export default function PacienteDetailPage() {
 
     if (tab === 'estadisticas') {
       return <EstadisticasChart pacienteId={estudianteId} />;
+    }
+
+    if (tab === 'ovas') {
+      return <OvasPaciente pacienteId={estudianteId} />;
     }
 
     if (tab === 'evaluaciones') {

@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Mail, Users, UserCircle, LogOut } from 'lucide-react';
+import { LayoutDashboard, Mail, Users, Library, UserCircle, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/solicitudes', icon: Mail, label: 'Solicitudes' },
   { to: '/pacientes', icon: Users, label: 'Pacientes' },
+  { to: '/ovas', icon: Library, label: 'OVAs' },
 ];
 
 export function Sidebar() {

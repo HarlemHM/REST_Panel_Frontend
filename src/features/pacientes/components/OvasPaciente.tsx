@@ -89,7 +89,7 @@ export function OvasPaciente({ pacienteId }: OvasPacienteProps) {
                 <div>
                   <p className="text-xs text-text-muted">Puntaje pre → post</p>
                   <p className="font-medium">
-                    {formatearNumero(a.pre_puntaje, 1)} → {a.post_evaluacion_id ? formatearNumero(a.post_puntaje, 1) : 'pendiente'}
+                    {formatearNumero(a.pre_puntaje, 1)} → {a.post_puntaje != null ? formatearNumero(a.post_puntaje, 1) : 'pendiente'}
                   </p>
                 </div>
                 <div>

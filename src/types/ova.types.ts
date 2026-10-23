@@ -118,7 +118,7 @@ export interface OvaAsignacionPaciente {
   ova_id: number;
   regla_id: number | null;
   pre_evaluacion_id: number;
-  post_evaluacion_id: number | null;
+  post_evaluacion_id?: number | null;
   estado: OvaAsignacionEstado;
   matched_dimension: string | null;
   matched_nivel: string | null;
